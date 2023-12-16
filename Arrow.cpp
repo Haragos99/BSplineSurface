@@ -40,9 +40,7 @@ void MyViewer::drawWithNames() {
     case  ModelType::INVERZ:
         target.drawarrow();
         break;
-    case  ModelType::SKELTON:
-        sk.drawarrow(sk);
-        break;
+   
     }
 }
 
@@ -84,15 +82,7 @@ void MyViewer::postSelection(const QPoint& p) {
         axes.position = Vec(mesh.point(MyMesh::VertexHandle(sel)).data());
     if (model_type == ModelType::BEZIER_SURFACE)
         axes.position = control_points[sel];
-    if (model_type == ModelType::SKELTON)
-    {
-        sk.makefalse(sk);
-        Tree* t = sk.searchbyid(sk, sel);
-        sk.maketrue(*t);
-        axes.position = t->point;
-        drawSkleton();
-       
-    }
+    
     if (model_type == ModelType::INVERZ)
     {
         axes.position = target.position;
