@@ -37,9 +37,6 @@ void MyViewer::drawWithNames() {
         
         break;
 
-    case  ModelType::INVERZ:
-        target.drawarrow();
-        break;
    
     }
 }
@@ -83,10 +80,6 @@ void MyViewer::postSelection(const QPoint& p) {
     if (model_type == ModelType::BEZIER_SURFACE)
         axes.position = control_points[sel];
     
-    if (model_type == ModelType::INVERZ)
-    {
-        axes.position = target.position;
-    }
     double depth = camera()->projectedCoordinatesOf(axes.position)[2];
     Vec q1 = camera()->unprojectedCoordinatesOf(Vec(0.0, 0.0, depth));
     Vec q2 = camera()->unprojectedCoordinatesOf(Vec(width(), height(), depth));

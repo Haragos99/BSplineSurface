@@ -405,26 +405,6 @@ void MyViewer::updateMesh(bool update_mean_range) {
 }
 
 
-void MyViewer::setupCameraBone() {
-    // Set camera on the model
-    Vector box_min, box_max;
-    box_min = box_max = Vector(points.front().x, points.front().y, points.front().z);
-    for (auto v : points) {
-        box_min.minimize(Vector(v.x, v.y, v.z));
-        box_max.maximize(Vector(v.x, v.y, v.z));
-    }
-    camera()->setSceneBoundingBox(Vec(box_min.data()), Vec(box_max.data()));
-    camera()->showEntireScene();
-
-    slicing_scaling = 20 / (box_max - box_min).max();
-
-    setSelectedName(-1);
-    axes.shown = false;
-
-    update();
-}
-
-
 void MyViewer::setupCamera() {
   // Set camera on the model
   Vector box_min, box_max;
@@ -482,182 +462,6 @@ void MyViewer::init() {
 
 
 
-
-
-
-
-
-
-float MyViewer::ErrorDistance(MyMesh::VertexHandle p1, MyMesh::VertexHandle p2, MyMesh::Point newp)
-{
-    float result = Calculate_Min(p1, newp) + Calculate_Min(p2, newp);
-    return result;
-}
-
-float MyViewer::Calculate_Min(MyMesh::VertexHandle p1, MyMesh::Point newp)
-{
-   
-    
-    std::vector<float> min;
-    for (MyMesh::VertexFaceIter vf_it = mesh.vf_iter(p1); vf_it.is_valid(); ++vf_it) {
-        MyMesh::FaceHandle face_handle = *vf_it;
-        MyMesh::Normal face_normal = mesh.normal(face_handle);
-        MyMesh::Point p = roundPoint(mesh.point(p1));
-        MyMesh::Point r = p - roundPoint(newp);
-        double min_value = abs(r | face_normal);
-        min.push_back(min_value);
-        
-    }
-
-    auto result = std::min_element(min.begin(), min.end());
-
-    return *result;
-}
-
-void MyViewer::collapseEdge(MyMesh::HalfedgeHandle h, int i)
-{
-    MyMesh::VertexHandle v = mesh.to_vertex_handle(h);
-    MyMesh::VertexHandle v2 = mesh.from_vertex_handle(h);
-    MyMesh::Point point1 = mesh.point(v);
-    MyMesh::Point point2 = mesh.point(v2);
-    MyMesh::Point newPoint;
-    newPoint = (point1 + point2) / 2.0f;
-
-    if (mesh.is_boundary(v2))
-    {
-        newPoint = point2;
-    }
-    //Edgecolleps[i].vh = getVertex(v2, v);
-    Edgecolleps[i].v = v;
-    for (auto v : Edgecolleps[i].vh)
-    {
-        auto p = mesh.point(v);
-        Edgecolleps[i].po.push_back(p);
-    }
-    Edgecolleps[i].v2 = v2;
-    putVertexes(v2, v, i);
-    mesh.collapse(h);
-    mesh.set_point(v, newPoint);
-}
-
-void MyViewer::Calculate_collapses(MyMesh::HalfedgeHandle h)
-{
-    MyMesh::VertexHandle v = mesh.to_vertex_handle(h);
-    MyMesh::VertexHandle v2 = mesh.from_vertex_handle(h);
-    MyMesh::Point point1 = mesh.point(v);
-    MyMesh::Point point2 = mesh.point(v2);
-    MyMesh::Point newPoint;
-    newPoint = (point1 + point2) / 2.0f;
-    float error_distance = ErrorDistance(v, v2, newPoint);
-
-    Edgecolleps.push_back(Ecolleps(h.idx(), error_distance, h, getFaces(v2, v), v, point1, point2, getVertex(v2, v)));
-
-}
-
-void MyViewer::VertexSplit(Ecolleps e)
-{
-    MyMesh::VertexHandle v = e.v;
-    mesh.set_point(v, e.p);
-    MyMesh::VertexHandle v2 = mesh.add_vertex(e.p_deleted);
-    if (e.vh.size() == 1)
-    {
-        MyMesh::VertexHandle s;
-        s.reset();
-        e.vh.push_back(s);
-    }
-
-    mesh.vertex_split(e.v2, v, e.vl, e.vr);
-    //auto faces = e.conected;
-
-
-
-
-
-}
-
-void  MyViewer::putVertexes(MyMesh::VertexHandle p1, MyMesh::VertexHandle p2, int i) {
-    // Get all faces connected to point1
-    std::vector<MyMesh::FaceHandle> connected_faces;
-    for (auto fv_it = mesh.vf_iter(p1); fv_it.is_valid(); ++fv_it) {
-        connected_faces.push_back(fv_it.handle());
-    }
-    // Filter out faces connected to point2
-    std::vector<MyMesh::FaceHandle> result_faces;
-    for (const auto& face : connected_faces) {
-        bool connected_to_point2 = false;
-        for (auto fv_it = mesh.fv_iter(face); fv_it.is_valid(); ++fv_it) {
-            if (fv_it.handle() == p2) {
-                connected_to_point2 = true;
-                break;
-            }
-        }
-
-        if (connected_to_point2) {
-            result_faces.push_back(face);
-        }
-    }
-    std::vector<MyMesh::VertexHandle> result;
-
-    for (auto f : result_faces)
-    {
-
-
-
-        for (auto v : mesh.fv_range(f))
-        {
-            if (v != p1 && v != p2)
-            {
-                result.push_back(v);
-                break;
-            }
-        }
-
-        int ds = 0;
-
-    }
-    int w = 0;
-    if (i == 18)
-    {
-        int u = 0;
-    }
-    for (auto v : result)
-    {
-        MyMesh::HalfedgeHandle he = mesh.find_halfedge(p2, v);
-        if (mesh.face_handle(he) == result_faces[w]) {
-            he = mesh.find_halfedge(p2, v);
-            auto v2 = mesh.to_vertex_handle(he);
-            auto v3 = mesh.from_vertex_handle(he);
-
-            if (v2 == v)
-            {
-                Edgecolleps[i].vl = v;
-            }
-
-            if (v3 == v)
-            {
-                Edgecolleps[i].vr = v;
-            }
-        }
-        else {
-            he = mesh.find_halfedge(v, p2);
-            auto v2 = mesh.to_vertex_handle(he);
-            auto v3 = mesh.from_vertex_handle(he);
-
-            if (v2 == v)
-            {
-                Edgecolleps[i].vl = v;
-            }
-
-            if (v3 == v)
-            {
-                Edgecolleps[i].vr = v;
-            }
-        }
-        w++;
-    }
-
-
-}
 
 void MyViewer::generateBSMesh(size_t resolution)
 {
@@ -728,60 +532,7 @@ void MyViewer::keyPressEvent(QKeyEvent *e) {
         camera()->setType(qglviewer::Camera::PERSPECTIVE);
       update();
       break;
-    case Qt::Key_7:
-        Edgecolleps.clear();
-        kell = 0;
-        target = ControlPoint(Vec(0.1, 0, 0));
-        for (auto h : mesh.halfedges()) {
-            if (mesh.is_collapse_ok(h))
-
-                Calculate_collapses(h);
-            //if (h.idx() == 100) break;
-
-
-        }
-        std::sort(Edgecolleps.begin(), Edgecolleps.end(), sortByError);
-        QMessageBox::information(this, "EColeps", "EdgeColleps is calculated ");
-        break;
-
-    case Qt::Key_6:
-        sizek = Edgecolleps.size() / 5;
-
-        for (int i = sizek - 1; i >= 0; i--)
-        {
-            if (Edgecolleps[i].used) {
-                VertexSplit(Edgecolleps[i]);
-                Edgecolleps[i].used = false;
-            }
-            
-        }
-        QMessageBox::information(this, "EColeps", "DONE ");
-        mesh.request_face_normals();
-        mesh.request_vertex_normals();
-        mesh.update_face_normals();
-        update();
-        break;
-    case Qt::Key_P:
-      //visualization = Visualization::PLAIN;
-        sizek = Edgecolleps.size() / 2;
-
-        
-        sizek = Edgecolleps.size() / 5;
-        for (int i = 0; i < sizek;i++)
-        {
-            if (mesh.is_collapse_ok(Edgecolleps[i].h)){
-                collapseEdge(Edgecolleps[i].h,i);
-                Edgecolleps[i].used = true;
-            }
-        }
-       // mesh.garbage_collection();
-        mesh.request_face_normals();
-        mesh.request_vertex_normals();
-        mesh.update_face_normals();
-        
-
-        update();
-      break;
+    
     case Qt::Key_M:
       visualization = Visualization::MEAN;
       update();
@@ -820,23 +571,7 @@ void MyViewer::keyPressEvent(QKeyEvent *e) {
         update();
         break;
 
-    case Qt::Key_4:
-        if (axes.shown) {
-            //Rotate();
-        }
-        if (kell != -1)
-        {
 
-       
-            if (Edgecolleps[kell].used  ) {
-                VertexSplit(Edgecolleps[kell]);
-                Edgecolleps[kell].used = false;
-            
-            }
-            kell--;
-        }
-        update();
-        break;
     case Qt::Key_B:
       show_skelton = !show_skelton;
       update();
@@ -845,28 +580,7 @@ void MyViewer::keyPressEvent(QKeyEvent *e) {
     
     
 
-    case Qt::Key_3:
-
-        
-        if (mesh.is_collapse_ok(Edgecolleps[kell].h)) {
-            collapseEdge(Edgecolleps[kell].h, kell);
-            Edgecolleps[kell].used = true;
-            
-        }
-        kell++;
-
-
-        //keyframe_add();
-        //if (mesh.n_vertices() != 0)
-        //{
-        //    for (auto v : mesh.vertices()) {
-        //        mesh.data(v).weigh.clear();
-        //    }
-        //    model_type = ModelType::MESH;
-        //   cruv visualization = Visualization::PLAIN;
-        //}
-        update();
-        break;
+    
     case Qt::Key_C:
       show_control_points = !show_control_points;
       update();
@@ -1017,26 +731,6 @@ void MyViewer::mouseMoveEvent(QMouseEvent *e) {
 }
 
 
-
-
-bool MyViewer::is_still_ok()
-{
-    double size = Edgecolleps.size() / 5;
-    for (int i = 0; i < size; i++)
-    {
-        auto pd = Edgecolleps[i].p;
-        Vec d = Vec(pd[0], pd[1], pd[2]);
-        auto dis = distance(d, target.position);
-        bool use = Edgecolleps[i].used;
-        if (dis <= 6 && use)
-        {
-            return true;
-        }
-
-    }
-
-    return false;
-}
 
 
 

@@ -4,10 +4,10 @@
 
 void MyViewer::draw() {
 
-   /* drawText(10, int(1.5 * ((QApplication::font().pixelSize() > 0)
-        ? QApplication::font().pixelSize()
-        : QApplication::font().pointSize())),
-        QString("Frame:") + QString(std::to_string(FrameSecond).c_str()));*/
+    /* drawText(10, int(1.5 * ((QApplication::font().pixelSize() > 0)
+         ? QApplication::font().pixelSize()
+         : QApplication::font().pointSize())),
+         QString("Frame:") + QString(std::to_string(FrameSecond).c_str()));*/
 
     if (model_type == ModelType::BEZIER_SURFACE && show_control_points)
         drawControlNet();
@@ -15,15 +15,9 @@ void MyViewer::draw() {
 
 
 
-    glDisable(GL_LIGHTING);
-    glColor3d(1, 0, 0);
-    glPointSize(50.0);
-    glBegin(GL_POINTS);
-    glVertex3dv(nt.data());
-    glEnd();
-    glEnable(GL_LIGHTING);
 
-    if (model_type == ModelType::Bspline&& show_control_points)
+
+    if (model_type == ModelType::Bspline && show_control_points)
         bs.draw();
 
     if (transparent) {
@@ -34,9 +28,9 @@ void MyViewer::draw() {
         glDisable(GL_BLEND);
     }
 
-   
-    
-    
+
+
+
     glPolygonMode(GL_FRONT_AND_BACK, !show_solid && show_wireframe ? GL_LINE : GL_FILL);
     //glEnable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
@@ -67,15 +61,15 @@ void MyViewer::draw() {
                     glColor3dv(meanMapColor(mesh.data(v).mean));
                 else if (visualization == Visualization::SLICING)
                     glTexCoord1d(mesh.point(v) | slicing_dir * slicing_scaling);
-                
-               
+
+
                 if (_homework)
                 {
                     bool found = false;
                     for (const auto& entry : sortedMap) {
                         if (entry.first == f) {
                             found = true;
-                            glColor3d(1,0,0);
+                            glColor3d(1, 0, 0);
                             break; // Value found, exit the loop
                         }
                         else
@@ -103,7 +97,7 @@ void MyViewer::draw() {
     }
 
     if (show_solid && show_wireframe) {
-        glPolygonMode(GL_FRONT, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glColor3d(0.0, 0.0, 0.0);
         glDisable(GL_LIGHTING);
         for (auto f : mesh.faces()) {
@@ -115,21 +109,12 @@ void MyViewer::draw() {
         glEnable(GL_LIGHTING);
     }
 
-
     if (axes.shown)
         drawAxes();
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-    glColor3d(1.0, 1.0, 1.0);
-    drawText(10, int(1.5 * ((QApplication::font().pixelSize() > 0)
-        ? QApplication::font().pixelSize()
-        : QApplication::font().pointSize())),
-        QString("Index:") + QString(std::to_string(kell).c_str()));
-    glEnable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
+
+
+
 }
-
-
 
 void MyViewer::drawControlNet() const {
     glDisable(GL_LIGHTING);
