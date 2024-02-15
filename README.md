@@ -1,6 +1,8 @@
 # Results
 
 ![Alt text](https://github.com/Haragos99/BSplineSurface/raw/main/source/pictures/Bspline1.png)
+![Alt text](https://github.com/Haragos99/BSplineSurface/raw/main/source/pictures/Bspline2.png)
+![Alt text](https://github.com/Haragos99/BSplineSurface/raw/main/source/pictures/Bspline3.png)
 
 
 
