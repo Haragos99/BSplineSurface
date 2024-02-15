@@ -1,6 +1,7 @@
 # Results
 
-![Alt text]([image link](https://github.com/Haragos99/BSplineSurface/blob/main/source/pictures/Bspline1.png))
+![Alt text](https://github.com/Haragos99/BSplineSurface/raw/main/source/pictures/Bspline1.png)
+
 
 
 # Usage
