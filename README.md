@@ -1,3 +1,8 @@
+# Results
+
+![Alt text]([image link](https://github.com/Haragos99/BSplineSurface/blob/main/source/pictures/Bspline1.png))
+
+
 # Usage
 
 Pressing `h` displays a help window that contains all the necessary information.
