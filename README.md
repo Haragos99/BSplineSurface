@@ -1,6 +1,6 @@
 # Description
 
-This is a B-spline surface where only the outer control points can be modified, and the internal control points are calculated automatically (see below).
+This is a B-spline surface where only the outer control points can be modified, and the internal control points are calculated automatically.
 
 The program must know the following:
 
