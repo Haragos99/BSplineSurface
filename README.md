@@ -1,3 +1,15 @@
+# Sescription
+
+This is a B-spline surface where only the outer control points can be modified, and the internal control points are calculated automatically (see below).
+
+The program must know the following:
+
+-Reading .dbs files (see file format below)
+-Based on this, the display of the DBS interface
+-As with Bézier surfaces, pressing c displays the control mesh, but points should only be drawn for the extreme control points and they should be movable
+-The normal vectors and the mean curvature must be calculated from the continuous geometry based on the exact derivatives
+-The fullness constant must be adjustable on the user interface (see below; initial value 0.5)
+
 # Results
 
 ![Alt text](https://github.com/Haragos99/BSplineSurface/raw/main/source/pictures/Bspline1.png)
